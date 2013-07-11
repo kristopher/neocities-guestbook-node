@@ -27,11 +27,12 @@ app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(app.router);
 
+
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 } else if ('production' == app.get('env')) {
-  redis_url = url.parse(app.settings.env('REDISCLOUD_URL'));
+  redis_url = url.parse(process.env['REDISCLOUD_URL']);
 }
 
 function isValidReferer(referer) {
@@ -45,7 +46,7 @@ function isValidReferer(referer) {
 db = redis.createClient(redis_url.port, redis_url.hostname);
 
 if (redis_url.auth) {
-  db.auth(db, redis_url.auth.split(/\:/));
+  db.auth(redis_url.auth.split(/\:/)[1]);
 }
 
 var Entry = require('./models/entry');
