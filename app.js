@@ -8,7 +8,9 @@ var express = require('express'),
   path = require('path'),
   url = require('url'),
   app = express(),
-  redis = require('redis'), db, redis_url = url.parse('redis://localhost:6379');
+  redis = require('redis'),
+  redis_url = url.parse('redis://localhost:6379'),
+  db;
   
 module.exports = {
   db: function() {
@@ -96,7 +98,7 @@ var middleware = [
   require_referer,
   set_subdomain,
   set_content_type
-]
+];
 
 app.get('/', middleware, function(req, res, next) {
   Entry.get(req.subdomain, req.param('page') || 1, function(reply) {
@@ -108,7 +110,7 @@ app.get('/', middleware, function(req, res, next) {
     }
   }, function(err) {
     console.error(err);
-    res.statusCode = 500
+    res.statusCode = 500;
     res.end("[]");
   });
 });
@@ -121,11 +123,11 @@ app.post('/', middleware,  function(req, res, next) {
   });
   if (entry.isValid()) {
     entry.save(function() {
-      res.statusCode = 201
+      res.statusCode = 201;
       res.end(entry.toJSON())
     }, function(err) {
       console.error(err);
-      res.statusCode = 500
+      res.statusCode = 500;
       res.end('[]');
     });
   } else {
