@@ -86,15 +86,19 @@ function set_subdomain(req, res, next) {
 
 // Set content type
 function set_content_type(req, res, next) {
-  if (req.param('callback')) {
-    res.set('Content-Type', 'text/javascript');
-  } else {
-    res.set('Content-Type', 'application/json');
-  }
+  res.set('Content-Type', 'application/json');
   next();
 }
 
-app.get('/', set_cors, set_default_referer, require_referer, set_subdomain, set_content_type, function(req, res, next) {
+var middleware = [
+  set_cors,
+  set_default_referer,
+  require_referer,
+  set_subdomain,
+  set_content_type
+]
+
+app.get('/', middleware, function(req, res, next) {
   Entry.get(req.subdomain, req.param('page') || 1, function(reply) {
     res.statusCode = 200;
     if (reply) {
@@ -109,7 +113,7 @@ app.get('/', set_cors, set_default_referer, require_referer, set_subdomain, set_
   });
 });
 
-app.post('/', set_cors, set_default_referer, require_referer, set_subdomain, set_content_type,  function(req, res, next) {
+app.post('/', middleware,  function(req, res, next) {
   var entry = new Entry({
     subdomain: req.subdomain,
     name: req.param('name'),
